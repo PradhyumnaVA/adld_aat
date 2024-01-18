@@ -12,7 +12,7 @@ reg [3:0] w_ptr, r_ptr;
 reg full, empty;
 reg [7:0]fifo[15:0];
 
-always @(posedge clk, posedge rst) begin
+always @(posedge clk) begin
     if(!rst)begin
       	for (i = 0; i < 16; i = i + 1) begin
       		fifo[i] = 8'h00;
@@ -25,7 +25,7 @@ always @(posedge clk, posedge rst) begin
     end
 
     else begin
-        if(w_ptr<=4'd15 && write_en!=0) begin
+        if(w_ptr<=4'd15 && write_en!=0 && full!=1) begin
             fifo[w_ptr] <= data_in;
             $display("%d, %h",w_ptr, data_in);         
             if(w_ptr==4'hF) begin
@@ -37,7 +37,7 @@ always @(posedge clk, posedge rst) begin
             w_ptr++;
         end
 
-        else if(r_ptr<=4'd15 && read_en!=0) begin
+        else if(r_ptr<=4'd15 && read_en!=0 && empty!=1) begin
             data_out <= fifo[r_ptr];
             $display("%d, %h, %h",r_ptr, fifo[r_ptr], data_out);
             if(r_ptr==4'd15) empty <= 1'b1;
